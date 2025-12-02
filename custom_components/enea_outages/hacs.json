@@ -1,0 +1,6 @@
+{
+  "name": "Enea Outages",
+  "render_readme": true,
+  "iot_class": "cloud_polling",
+  "domains": ["sensor", "binary_sensor"]
+}

@@ -1,0 +1,43 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Enea Wyłączenia: Lokalizacja",
+                "description": "Wybierz region i opcjonalnie ulicę do monitorowania przerw w dostawie prądu.",
+                "data": {
+                    "region": "Region",
+                    "street": "Ulica (opcjonalnie)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Nie można połączyć się z serwerem Enea.",
+            "invalid_region": "Wybrany region jest nieprawidłowy.",
+            "unknown": "Wystąpił nieznany błąd."
+        },
+        "abort": {
+            "already_configured": "Ta lokalizacja (region i ulica) jest już skonfigurowana."
+        }
+    },
+    "entity": {
+        "sensor": {
+            "planned_outages_count": {
+                "name": "Liczba planowanych wyłączeń"
+            },
+            "unplanned_outages_count": {
+                "name": "Liczba nieplanowanych wyłączeń"
+            },
+            "planned_outages_summary": {
+                "name": "Podsumowanie planowanych wyłączeń"
+            },
+            "unplanned_outages_summary": {
+                "name": "Podsumowanie nieplanowanych wyłączeń"
+            }
+        },
+        "binary_sensor": {
+            "outage_active": {
+                "name": "Awaria aktywna"
+            }
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Enea Outages: Location",
+                "description": "Select the region and optionally a street to monitor for power outages.",
+                "data": {
+                    "region": "Region",
+                    "street": "Street (optional)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Unable to connect to the Enea server.",
+            "invalid_region": "The selected region is invalid.",
+            "unknown": "An unknown error occurred."
+        },
+        "abort": {
+            "already_configured": "This location (region and street) is already configured."
+        }
+    },
+    "entity": {
+        "sensor": {
+            "planned_outages_count": {
+                "name": "Planned Outages Count"
+            },
+            "unplanned_outages_count": {
+                "name": "Unplanned Outages Count"
+            },
+            "planned_outages_summary": {
+                "name": "Planned Outages Summary"
+            },
+            "unplanned_outages_summary": {
+                "name": "Unplanned Outages Summary"
+            }
+        },
+        "binary_sensor": {
+            "outage_active": {
+                "name": "Outage Active"
+            }
+        }
+    }
+}
