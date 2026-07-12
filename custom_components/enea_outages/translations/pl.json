@@ -12,8 +12,7 @@
         },
         "error": {
             "cannot_connect": "Nie można połączyć się z serwerem Enea.",
-            "invalid_region": "Wybrany region jest nieprawidłowy.",
-            "unknown": "Wystąpił nieznany błąd."
+            "invalid_region": "Wybrany region jest nieprawidłowy."
         },
         "abort": {
             "already_configured": "Ta lokalizacja (region i ulica) jest już skonfigurowana."

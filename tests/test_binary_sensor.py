@@ -7,8 +7,12 @@ import pytest
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.enea_outages.const import DOMAIN, CONF_REGION, CONF_STREET
+from custom_components.enea_outages.const import DOMAIN, CONF_REGION, CONF_STREET, ENEA_TIME_ZONE
 from enea_outages.models import Outage
+
+# Outage.start_time/end_time are naive Poland local time (see ENEA_TIME_ZONE); build fixture
+# times the same way the integration reads "now", so tests don't depend on the CI/OS time zone.
+_ENEA_NOW = datetime.now(ENEA_TIME_ZONE).replace(microsecond=0, tzinfo=None)
 
 
 @pytest.fixture
@@ -28,8 +32,8 @@ def mock_get_outages_for_region():
                 Outage(  # Active planned outage
                     region="Poznań",
                     description="Planned outage street Testowa 2 (active)",
-                    start_time=datetime.now().replace(microsecond=0) - timedelta(hours=1),
-                    end_time=datetime.now().replace(microsecond=0) + timedelta(hours=1),
+                    start_time=_ENEA_NOW - timedelta(hours=1),
+                    end_time=_ENEA_NOW + timedelta(hours=1),
                 ),
             ],
             # Unplanned outages
@@ -38,7 +42,7 @@ def mock_get_outages_for_region():
                     region="Poznań",
                     description="Unplanned outage street Testowa 1",
                     start_time=None,
-                    end_time=datetime.now().replace(microsecond=0) + timedelta(minutes=30),  # Active unplanned outage
+                    end_time=_ENEA_NOW + timedelta(minutes=30),  # Active unplanned outage
                 ),
             ],
         ]

@@ -12,11 +12,11 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, CONF_REGION, CONF_STREET
+from .const import DOMAIN, CONF_REGION, CONF_STREET, ENEA_TIME_ZONE
+from .entity import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,19 +77,14 @@ class EneaOutagesActiveBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._region = config_entry.data[CONF_REGION]
 
         self._attr_unique_id = f"{config_entry.entry_id}_{entity_description.key}"
-
-        device_name = f"Enea Outages ({self._region}{' - ' + self._street if self._street else ''})"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, config_entry.entry_id)},
-            name=device_name,
-            model="Enea Outages Monitor",
-            manufacturer="Enea Operator",
-        )
+        self._attr_device_info = build_device_info(config_entry, self._region, self._street)
 
     @property
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
-        now = datetime.now()
+        # Outage start/end times are naive Poland local time; compare against "now" in that
+        # same zone (stripped back to naive) rather than the OS's or HA's configured zone.
+        now = datetime.now(ENEA_TIME_ZONE).replace(tzinfo=None)
 
         # Check planned outages
         planned_outages = self._filter_outages(self.coordinator.data)

@@ -1,7 +1,15 @@
 """Constants for the Enea Outages integration."""
 
+from zoneinfo import ZoneInfo
+
 DOMAIN = "enea_outages"
 PLATFORMS = ["sensor", "binary_sensor"]
+
+# Enea Operator always publishes outage times as naive local Poland time, regardless of
+# where Home Assistant (or the machine it runs on) is configured. Use this to interpret
+# "now" when comparing against Outage.start_time/end_time, instead of HA's or the OS's
+# configured time zone.
+ENEA_TIME_ZONE = ZoneInfo("Europe/Warsaw")
 
 CONF_REGION = "region"
 CONF_STREET = "street"

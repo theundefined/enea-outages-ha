@@ -10,7 +10,6 @@ from enea_outages.models import Outage, OutageType
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -22,6 +21,7 @@ from .const import (
     ATTR_START_TIME,
     ATTR_END_TIME,
 )
+from .entity import build_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -127,24 +127,44 @@ class EneaOutagesBaseSensor(CoordinatorEntity, SensorEntity):
         self._region = config_entry.data[CONF_REGION]
 
         self._attr_unique_id = f"{config_entry.entry_id}_{entity_description.key}"
-
-        device_name = f"Enea Outages ({self._region}{' - ' + self._street if self._street else ''})"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, config_entry.entry_id)},
-            name=device_name,
-            model="Enea Outages Monitor",
-            manufacturer="Enea Operator",
-        )
+        self._attr_device_info = build_device_info(config_entry, self._region, self._street)
 
     @property
     def _outages_data(self) -> list[Outage]:
-        """Return the relevant outages data from the coordinator."""
-        # The coordinator already fetches data for the specific outage type
+        """Return the relevant outages data from the coordinator.
+
+        Always returns a new list: coordinator.data is shared across every entity/config
+        entry for this region (see COORDINATORS in __init__.py), so callers that sort this
+        list in place must not mutate the coordinator's cached data.
+        """
         all_outages = self.coordinator.data
 
         if self._street:
             return [o for o in all_outages if self._street.lower() in o.description.lower()]
-        return all_outages
+        return list(all_outages)
+
+    @property
+    def _sorted_outages(self) -> list[Outage]:
+        """Return this sensor's outages sorted by relevance for its outage type."""
+        outages = self._outages_data
+        if self._outage_type == OutageType.PLANNED:
+            outages.sort(key=lambda o: o.start_time if o.start_time else datetime.max)
+        else:  # Unplanned
+            outages.sort(key=lambda o: o.end_time if o.end_time else datetime.max)
+        return outages
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes, limited to the 10 most relevant outages."""
+        outages_list = [
+            {
+                ATTR_DESCRIPTION: outage.description,
+                ATTR_START_TIME: outage.start_time.isoformat() if outage.start_time else None,
+                ATTR_END_TIME: outage.end_time.isoformat() if outage.end_time else None,
+            }
+            for outage in self._sorted_outages[:10]
+        ]
+        return {"outages": outages_list}
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -160,30 +180,6 @@ class EneaOutagesCountSensor(EneaOutagesBaseSensor):
         """Return the number of outages."""
         return len(self._outages_data)
 
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the state attributes."""
-        attrs = {}
-        outages_list = []
-
-        # Sort and limit outages to prevent database overload
-        outages = self._outages_data
-        if self._outage_type == OutageType.PLANNED:
-            outages.sort(key=lambda o: o.start_time if o.start_time else datetime.max)
-        else:  # Unplanned
-            outages.sort(key=lambda o: o.end_time if o.end_time else datetime.max)
-
-        for outage in outages[:10]:
-            outages_list.append(
-                {
-                    ATTR_DESCRIPTION: outage.description,
-                    ATTR_START_TIME: outage.start_time.isoformat() if outage.start_time else None,
-                    ATTR_END_TIME: outage.end_time.isoformat() if outage.end_time else None,
-                }
-            )
-        attrs["outages"] = outages_list
-        return attrs
-
 
 class EneaOutagesSummarySensor(EneaOutagesBaseSensor):
     """Sensor to report a summary of Enea Outages."""
@@ -191,44 +187,17 @@ class EneaOutagesSummarySensor(EneaOutagesBaseSensor):
     @property
     def native_value(self) -> str:
         """Return the summary of the next outage."""
-        outages = self._outages_data
+        outages = self._sorted_outages
 
         if not outages:
             return "Brak"
 
-        # Sort outages to find the most relevant one for the summary
         if self._outage_type == OutageType.PLANNED:
-            outages.sort(key=lambda o: o.start_time if o.start_time else datetime.max)
             next_outage = outages[0]
             start_time_str = next_outage.start_time.strftime("%Y-%m-%d %H:%M") if next_outage.start_time else "Nieznany"
             end_time_str = next_outage.end_time.strftime("%H:%M") if next_outage.end_time else "Nieznany"
             return f"Od: {start_time_str} do: {end_time_str} ({next_outage.description})"
         else:  # Unplanned
-            outages.sort(key=lambda o: o.end_time if o.end_time else datetime.max)
             current_outage = outages[0]
             end_time_str = current_outage.end_time.strftime("%Y-%m-%d %H:%M") if current_outage.end_time else "Nieznany"
             return f"Do: {end_time_str} ({current_outage.description})"
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the state attributes."""
-        attrs = {}
-        outages_list = []
-
-        # Sort and limit outages to prevent database overload
-        outages = self._outages_data
-        if self._outage_type == OutageType.PLANNED:
-            outages.sort(key=lambda o: o.start_time if o.start_time else datetime.max)
-        else:  # Unplanned
-            outages.sort(key=lambda o: o.end_time if o.end_time else datetime.max)
-
-        for outage in outages[:10]:
-            outages_list.append(
-                {
-                    ATTR_DESCRIPTION: outage.description,
-                    ATTR_START_TIME: outage.start_time.isoformat() if outage.start_time else None,
-                    ATTR_END_TIME: outage.end_time.isoformat() if outage.end_time else None,
-                }
-            )
-        attrs["outages"] = outages_list
-        return attrs
