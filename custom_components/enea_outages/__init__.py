@@ -14,7 +14,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import DOMAIN, CONF_REGION, DEFAULT_PLANNED_SCAN_INTERVAL, DEFAULT_UNPLANNED_SCAN_INTERVAL, PLATFORMS
 
-
 _LOGGER = logging.getLogger(__name__)
 
 # This is a dict of dictionaries of coordinators per region and outage type to cache the data
