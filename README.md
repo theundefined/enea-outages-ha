@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Niestandardowe%20Repozytorium-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
-Ta integracja dla Home Assistant dostarcza sensory do monitorowania planowanych i nieplanowanych przerw w dostawie prądu od Enea Operator dla określonego regionu i opcjonalnie ulicy.
+Ta integracja dla Home Assistant dostarcza sensory do monitorowania planowanych i nieplanowanych przerw w dostawie prądu od Enea Operator dla wybranego oddziału i opcjonalnie rejonu, miejscowości lub ulicy.
 
 ## Funkcjonalności
 
@@ -11,7 +11,7 @@ Ta integracja dla Home Assistant dostarcza sensory do monitorowania planowanych 
 *   Dostarczanie podsumowania nadchodzących/obecnych wyłączeń.
 *   Sensor binarny wskazujący, czy w danym momencie jakakolwiek przerwa jest aktywna dla skonfigurowanej lokalizacji.
 *   Konfigurowalne interwały skanowania dla planowanych i nieplanowanych wyłączeń.
-*   Wsparcie dla wielu konfiguracji lokalizacji (regionów/ulic).
+*   Wsparcie dla wielu konfiguracji lokalizacji (oddziałów, rejonów, miejscowości i ulic).
 *   Tłumaczenia na język angielski i polski.
 
 ## Instalacja
@@ -33,8 +33,12 @@ Integrację można zainstalować za pomocą HACS (Home Assistant Community Store
 1.  Po restarcie Home Assistant, przejdź do **Ustawienia** -> **Urządzenia i usługi**.
 2.  Kliknij **"DODAJ INTEGRACJĘ"** i wyszukaj "Enea Outages".
 3.  Postępuj zgodnie z instrukcjami konfiguracji:
-    *   Wybierz swój **Region** z listy rozwijanej (np. "Poznań").
-    *   Opcjonalnie, wpisz nazwę **Ulicy**. Jeśli pozostawisz to pole puste, integracja będzie monitorować cały wybrany region.
+    *   Wybierz swój **Oddział** z listy rozwijanej (np. "Poznań").
+    *   W następnym kroku możesz opcjonalnie zawęzić monitorowanie:
+        *   **Rejon** – wybierany z listy pobranej ze strony Enea (np. "Szamotuły"; dostępny tylko dla oddziałów, które dzielą się na rejony),
+        *   **Miejscowość** – filtrowana po stronie Enea (wystarczy fragment nazwy, wielkość liter nie ma znaczenia),
+        *   **Ulica** – szukana w opisie wyłączenia.
+    *   Jeśli pozostawisz te pola puste, integracja będzie monitorować cały wybrany oddział.
 4.  Po skonfigurowaniu, dla podanej lokalizacji zostanie utworzone nowe urządzenie (np. "Enea Wyłączenia (Poznań, Wojska Polskiego)"). Urządzenie to będzie zawierać:
     *   Sensory z liczbą planowanych i nieplanowanych wyłączeń.
     *   Sensory z podsumowaniem planowanych i nieplanowanych wyłączeń.
@@ -59,7 +63,7 @@ Ten projekt jest na licencji Apache 2.0. Zobacz plik [LICENSE](LICENSE), aby uzy
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom%20Repository-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
-This Home Assistant integration provides sensors to monitor planned and unplanned power outages from Enea Operator for a specific region and optionally a street.
+This Home Assistant integration provides sensors to monitor planned and unplanned power outages from Enea Operator for a selected branch and optionally an area, city or street.
 
 ## Features
 
@@ -68,7 +72,7 @@ This Home Assistant integration provides sensors to monitor planned and unplanne
 *   Provide summary of upcoming/current outages.
 *   Binary sensor indicating if any outage is currently active for the configured location.
 *   Configurable scan intervals for planned and unplanned outages.
-*   Supports multiple locations (regions/streets) configurations.
+*   Supports multiple locations (branches, areas, cities and streets).
 *   Translated to English and Polish.
 
 ## Installation
@@ -90,8 +94,12 @@ This integration can be installed via HACS (Home Assistant Community Store).
 1.  After restarting Home Assistant, go to **Settings** -> **Devices & Services**.
 2.  Click **"ADD INTEGRATION"** and search for "Enea Outages".
 3.  Follow the configuration flow:
-    *   Select your **Region** from the dropdown list (e.g., "Poznań").
-    *   Optionally, enter a **Street** name. If left empty, the integration will monitor the entire selected region.
+    *   Select your **Branch** from the dropdown list (e.g., "Poznań").
+    *   In the next step you can optionally narrow monitoring down:
+        *   **Area** – chosen from the list fetched from the Enea website (e.g., "Szamotuły"; only for branches divided into areas),
+        *   **City** – filtered by the Enea website (a part of the name is enough, case-insensitive),
+        *   **Street** – matched against the outage description.
+    *   If you leave these fields empty, the integration will monitor the entire selected branch.
 4.  Once configured, a new device will be created for your specified location (e.g., "Enea Outages (Poznań, Wojska Polskiego)"). This device will contain:
     *   Sensors for planned and unplanned outage counts.
     *   Sensors for planned and unplanned outage summaries.

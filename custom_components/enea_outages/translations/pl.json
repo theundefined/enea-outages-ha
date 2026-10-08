@@ -2,20 +2,29 @@
     "config": {
         "step": {
             "user": {
-                "title": "Enea Wyłączenia: Lokalizacja",
-                "description": "Wybierz region i opcjonalnie ulicę do monitorowania przerw w dostawie prądu.",
+                "title": "Enea Wyłączenia: Oddział",
+                "description": "Wybierz oddział Enea Operator do monitorowania przerw w dostawie prądu.",
                 "data": {
-                    "region": "Region",
+                    "region": "Oddział"
+                }
+            },
+            "location": {
+                "title": "Enea Wyłączenia: Lokalizacja",
+                "description": "Opcjonalnie zawęź monitorowanie w oddziale {region}. Pozostaw pola puste, aby monitorować cały oddział.",
+                "data": {
+                    "area": "Rejon (opcjonalnie)",
+                    "city": "Miejscowość (opcjonalnie)",
                     "street": "Ulica (opcjonalnie)"
                 }
             }
         },
         "error": {
             "cannot_connect": "Nie można połączyć się z serwerem Enea.",
-            "invalid_region": "Wybrany region jest nieprawidłowy."
+            "invalid_region": "Wybrany region jest nieprawidłowy.",
+            "invalid_area": "Wybrany rejon jest nieprawidłowy."
         },
         "abort": {
-            "already_configured": "Ta lokalizacja (region i ulica) jest już skonfigurowana."
+            "already_configured": "Ta lokalizacja jest już skonfigurowana."
         }
     },
     "entity": {

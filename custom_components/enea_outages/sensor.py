@@ -127,7 +127,7 @@ class EneaOutagesBaseSensor(CoordinatorEntity, SensorEntity):
         self._region = config_entry.data[CONF_REGION]
 
         self._attr_unique_id = f"{config_entry.entry_id}_{entity_description.key}"
-        self._attr_device_info = build_device_info(config_entry, self._region, self._street)
+        self._attr_device_info = build_device_info(config_entry)
 
     @property
     def _outages_data(self) -> list[Outage]:

@@ -13,6 +13,9 @@ ENEA_TIME_ZONE = ZoneInfo("Europe/Warsaw")
 
 CONF_REGION = "region"
 CONF_STREET = "street"
+CONF_AREA = "area"
+CONF_AREA_NAME = "area_name"
+CONF_CITY = "city"
 
 DEFAULT_REGION = "Poznań"
 DEFAULT_PLANNED_SCAN_INTERVAL = 3600  # 1 hour

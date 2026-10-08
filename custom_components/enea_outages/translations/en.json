@@ -2,20 +2,29 @@
     "config": {
         "step": {
             "user": {
-                "title": "Enea Outages: Location",
-                "description": "Select the region and optionally a street to monitor for power outages.",
+                "title": "Enea Outages: Branch",
+                "description": "Select the Enea Operator branch to monitor for power outages.",
                 "data": {
-                    "region": "Region",
+                    "region": "Branch"
+                }
+            },
+            "location": {
+                "title": "Enea Outages: Location",
+                "description": "Optionally narrow monitoring within the {region} branch. Leave the fields empty to monitor the whole branch.",
+                "data": {
+                    "area": "Area (optional)",
+                    "city": "City (optional)",
                     "street": "Street (optional)"
                 }
             }
         },
         "error": {
             "cannot_connect": "Unable to connect to the Enea server.",
-            "invalid_region": "The selected region is invalid."
+            "invalid_region": "The selected region is invalid.",
+            "invalid_area": "The selected area is invalid."
         },
         "abort": {
-            "already_configured": "This location (region and street) is already configured."
+            "already_configured": "This location is already configured."
         }
     },
     "entity": {
