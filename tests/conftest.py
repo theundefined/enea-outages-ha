@@ -1,7 +1,8 @@
 """Global fixtures for Enea Outages integration tests."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 # This fixture enables loading custom components from the custom_components folder
 pytest_plugins = "pytest_homeassistant_custom_component"

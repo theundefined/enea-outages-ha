@@ -6,12 +6,11 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-
+from enea_outages.client import EneaOutagesClient
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 
-from enea_outages.client import EneaOutagesClient
-from .const import DOMAIN, CONF_REGION, CONF_STREET, DEFAULT_REGION
+from .const import CONF_REGION, CONF_STREET, DEFAULT_REGION, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         available_regions = []
         try:
             client = EneaOutagesClient()
-            available_regions = await self.hass.async_add_executor_job(client.get_available_regions)
+            available_regions = await self.hass.async_add_executor_job(client.get_available_departments)
         except Exception as e:
             _LOGGER.error("Failed to get available regions: %s", e)
             errors["base"] = "cannot_connect"

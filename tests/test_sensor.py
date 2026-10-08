@@ -4,17 +4,17 @@ from datetime import datetime
 from unittest.mock import patch
 
 import pytest
+from enea_outages.models import Outage
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.enea_outages.const import DOMAIN, CONF_REGION, CONF_STREET
-from enea_outages.models import Outage
+from custom_components.enea_outages.const import CONF_REGION, CONF_STREET, DOMAIN
 
 
 @pytest.fixture
-def mock_get_outages_for_region():
-    """Fixture to mock EneaOutagesClient.get_outages_for_region."""
-    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_region", autospec=True) as mock_get_outages:
+def mock_get_outages_for_department():
+    """Fixture to mock EneaOutagesClient.get_outages_for_department."""
+    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_department", autospec=True) as mock_get_outages:
         # Default return values for planned and unplanned
         mock_get_outages.side_effect = [
             # Planned outages
@@ -58,7 +58,7 @@ def mock_get_outages_for_region():
 
 
 @pytest.mark.asyncio
-async def test_sensors_no_street(hass: HomeAssistant, mock_get_outages_for_region) -> None:
+async def test_sensors_no_street(hass: HomeAssistant, mock_get_outages_for_department) -> None:
     """Test sensors when no street is configured."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,
@@ -96,7 +96,7 @@ async def test_sensors_no_street(hass: HomeAssistant, mock_get_outages_for_regio
 
 
 @pytest.mark.asyncio
-async def test_sensors_with_street(hass: HomeAssistant, mock_get_outages_for_region) -> None:
+async def test_sensors_with_street(hass: HomeAssistant, mock_get_outages_for_department) -> None:
     """Test sensors when a street is configured."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,
@@ -137,7 +137,7 @@ async def test_sensors_with_street(hass: HomeAssistant, mock_get_outages_for_reg
 async def test_sensors_no_outages(hass: HomeAssistant) -> None:
     """Test sensors when no outages are found."""
     # Mocking client to return no outages at all
-    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_region", return_value=[]):
+    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_department", return_value=[]):
         config_entry = MockConfigEntry(
             domain=DOMAIN,
             data={CONF_REGION: "Poznań", CONF_STREET: "NoOutagesStreet"},

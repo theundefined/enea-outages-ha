@@ -7,13 +7,13 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.enea_outages.const import DOMAIN, CONF_REGION
+from custom_components.enea_outages.const import CONF_REGION, DOMAIN
 
 
 @pytest.fixture
 def mock_enea_client_get_outages():
-    """Fixture to mock EneaOutagesClient.get_outages_for_region."""
-    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_region", autospec=True) as mock_get_outages:
+    """Fixture to mock EneaOutagesClient.get_outages_for_department."""
+    with patch("enea_outages.client.EneaOutagesClient.get_outages_for_department", autospec=True) as mock_get_outages:
         mock_get_outages.return_value = []  # By default, return no outages
         yield mock_get_outages
 

@@ -6,13 +6,12 @@ import logging
 from datetime import timedelta
 
 from enea_outages.client import EneaOutagesClient
-from functools import partial
 from enea_outages.models import Outage, OutageType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_REGION, DEFAULT_PLANNED_SCAN_INTERVAL, DEFAULT_UNPLANNED_SCAN_INTERVAL, PLATFORMS
+from .const import CONF_REGION, DEFAULT_PLANNED_SCAN_INTERVAL, DEFAULT_UNPLANNED_SCAN_INTERVAL, DOMAIN, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,13 +38,15 @@ class EneaOutagesOutageTypeCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=update_interval),
         )
 
+    def _fetch_outages(self) -> list[Outage]:
+        """Fetch outages, closing the HTTP connection pool afterwards."""
+        with EneaOutagesClient() as client:
+            return client.get_outages_for_department(self.region, self.outage_type)
+
     async def _async_update_data(self) -> list[Outage]:
         """Fetch data from Enea API for the specific outage type."""
         try:
-            client = EneaOutagesClient()
-            return await self.hass.async_add_executor_job(
-                partial(client.get_outages_for_region, region=self.region, outage_type=self.outage_type)
-            )
+            return await self.hass.async_add_executor_job(self._fetch_outages)
         except Exception as err:
             raise UpdateFailed(
                 f"Error communicating with Enea API for {self.outage_type.name} in {self.region}: {err}"

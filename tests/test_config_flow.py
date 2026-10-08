@@ -7,14 +7,14 @@ from homeassistant import config_entries, data_entry_flow
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.enea_outages.const import DOMAIN, CONF_REGION, CONF_STREET
+from custom_components.enea_outages.const import CONF_REGION, CONF_STREET, DOMAIN
 
 
 @pytest.mark.asyncio
 async def test_form_user_no_street(hass: HomeAssistant) -> None:
     """Test we get the form and can configure an entry without a street."""
     with patch("custom_components.enea_outages.config_flow.EneaOutagesClient") as mock_client_class:
-        mock_client_class.return_value.get_available_regions.return_value = ["Poznań", "Szczecin"]
+        mock_client_class.return_value.get_available_departments.return_value = ["Poznań", "Szczecin"]
 
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -35,14 +35,14 @@ async def test_form_user_no_street(hass: HomeAssistant) -> None:
 
         assert result2["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
         assert result2["title"] == "Poznań"
-        assert mock_client_class.return_value.get_available_regions.call_count == 2
+        assert mock_client_class.return_value.get_available_departments.call_count == 2
 
 
 @pytest.mark.asyncio
 async def test_form_user_with_street(hass: HomeAssistant) -> None:
     """Test we get the form and can configure an entry with a street."""
     with patch("custom_components.enea_outages.config_flow.EneaOutagesClient") as mock_client_class:
-        mock_client_class.return_value.get_available_regions.return_value = ["Poznań", "Szczecin"]
+        mock_client_class.return_value.get_available_departments.return_value = ["Poznań", "Szczecin"]
 
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -64,14 +64,14 @@ async def test_form_user_with_street(hass: HomeAssistant) -> None:
         assert result2["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
         assert result2["title"] == "Szczecin, Wojska Polskiego"
         assert result2["data"] == {CONF_REGION: "Szczecin", CONF_STREET: "Wojska Polskiego"}
-        assert mock_client_class.return_value.get_available_regions.call_count == 2
+        assert mock_client_class.return_value.get_available_departments.call_count == 2
 
 
 @pytest.mark.asyncio
 async def test_form_cannot_connect(hass: HomeAssistant) -> None:
     """Test we handle cannot connect error during region fetching."""
     with patch("custom_components.enea_outages.config_flow.EneaOutagesClient") as mock_client_class:
-        mock_client_class.return_value.get_available_regions.side_effect = Exception("Connection error")
+        mock_client_class.return_value.get_available_departments.side_effect = Exception("Connection error")
 
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -82,7 +82,7 @@ async def test_form_cannot_connect(hass: HomeAssistant) -> None:
 async def test_form_invalid_region(hass: HomeAssistant) -> None:
     """Test we handle an invalid region selection."""
     with patch("custom_components.enea_outages.config_flow.EneaOutagesClient") as mock_client_class:
-        mock_client_class.return_value.get_available_regions.return_value = ["Poznań", "Szczecin"]
+        mock_client_class.return_value.get_available_departments.return_value = ["Poznań", "Szczecin"]
 
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -107,7 +107,7 @@ async def test_form_already_configured(hass: HomeAssistant) -> None:
     ).add_to_hass(hass)
 
     with patch("custom_components.enea_outages.config_flow.EneaOutagesClient") as mock_client_class:
-        mock_client_class.return_value.get_available_regions.return_value = ["Poznań", "Szczecin"]
+        mock_client_class.return_value.get_available_departments.return_value = ["Poznań", "Szczecin"]
 
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         result2 = await hass.config_entries.flow.async_configure(

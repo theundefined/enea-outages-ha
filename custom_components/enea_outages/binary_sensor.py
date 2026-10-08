@@ -15,7 +15,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, CONF_REGION, CONF_STREET, ENEA_TIME_ZONE
+from .const import CONF_REGION, CONF_STREET, DOMAIN, ENEA_TIME_ZONE
 from .entity import build_device_info
 
 _LOGGER = logging.getLogger(__name__)

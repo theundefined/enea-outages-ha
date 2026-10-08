@@ -14,12 +14,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
-    DOMAIN,
+    ATTR_DESCRIPTION,
+    ATTR_END_TIME,
+    ATTR_START_TIME,
     CONF_REGION,
     CONF_STREET,
-    ATTR_DESCRIPTION,
-    ATTR_START_TIME,
-    ATTR_END_TIME,
+    DOMAIN,
 )
 from .entity import build_device_info
 
