@@ -78,8 +78,8 @@ async def test_setup_entry_with_area_and_city(hass: HomeAssistant, mock_enea_cli
     assert (OutageType.PLANNED, None, None) in calls
     assert set(COORDINATORS) == {("Poznań", "10", "obrzycko"), ("Poznań", None, None)}
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, "narrowed-entry")})
-    assert device.name == "Enea Outages (Poznań - Szamotuły - Obrzycko)"
+    devices = dr.async_entries_for_config_entry(dr.async_get(hass), "narrowed-entry")
+    assert [device.name for device in devices] == ["Enea Outages (Poznań - Szamotuły - Obrzycko)"]
 
     assert await hass.config_entries.async_unload(narrowed_entry.entry_id)
     assert await hass.config_entries.async_unload(whole_region_entry.entry_id)
